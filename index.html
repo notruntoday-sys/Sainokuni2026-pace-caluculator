@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>彩の国100mile ペース計算ツール</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="topbar" aria-labelledby="title">
+        <div>
+          <h1 id="title">彩の国100mile ペース計算ツール</h1>
+          <div class="version">v1.2 Sainokuni pace table</div>
+        </div>
+        <div class="summary" aria-label="コース概要">
+          <span class="chip">距離 162.8 km</span>
+          <span class="chip">累積 約10,000 m</span>
+          <span class="chip">ソロ 7:00 / 駅伝 8:00</span>
+          <span class="chip">North + South1 + South2</span>
+        </div>
+      </section>
+
+      <form class="controls" id="pace-form">
+        <label>
+          部門
+          <select id="race-category">
+            <option value="solo" selected>ソロ</option>
+            <option value="relay">駅伝</option>
+          </select>
+        </label>
+        <label>
+          休憩パターン
+          <select id="rest-pattern">
+            <option>短め</option>
+            <option selected>標準</option>
+            <option>長め</option>
+          </select>
+        </label>
+        <label>
+          ペース戦略
+          <select id="strategy">
+            <option>イーブン</option>
+            <option selected>彩の国向け</option>
+            <option>後半10%落ち</option>
+            <option>後半20%落ち</option>
+            <option>後半30%落ち</option>
+            <option>後半40%落ち</option>
+          </select>
+        </label>
+        <label>
+          最短時間
+          <select id="min-hour"></select>
+        </label>
+        <label>
+          最長時間
+          <select id="max-hour"></select>
+        </label>
+        <button type="submit">再計算</button>
+        <button class="secondary-button" id="wallpaper-button" type="button">待ち受け表示</button>
+      </form>
+
+      <p class="notice" id="notice"></p>
+
+      <section class="strategy-note" aria-label="彩の国向けペース戦略の説明">
+        <strong>彩の国向け</strong>
+        <span>Northは少し軽め、South1中盤以降はやや重め、South2はさらに重めに時間を配分します。距離均等よりも後半の失速や登り返しを見込んだ設定です。</span>
+      </section>
+
+      <section class="member-summary" id="member-summary" hidden aria-label="駅伝メンバー別走行時間">
+        <div class="member-summary-head">
+          <h2>駅伝メンバー別走行時間</h2>
+          <p>交代地点の滞在時間は含めず、走行時間・経過時間・実時刻を表示します。</p>
+        </div>
+        <div class="member-summary-table">
+          <table id="member-table"></table>
+        </div>
+      </section>
+
+      <section class="wallpaper-panel" id="wallpaper-panel" hidden>
+        <div class="wallpaper-head">
+          <div class="wallpaper-title" id="wallpaper-title">待ち受け画像</div>
+          <div class="wallpaper-actions">
+            <button class="download-button" id="wallpaper-png" type="button">PNG保存</button>
+            <button class="close-button" id="wallpaper-close" type="button">閉じる</button>
+          </div>
+        </div>
+        <div class="wallpaper-frame">
+          <img id="wallpaper-image" alt="彩の国100mile ペース待ち受け画像">
+        </div>
+      </section>
+
+      <section class="table-shell" aria-live="polite">
+        <table id="pace-table"></table>
+      </section>
+
+      <div class="legend">
+        <span><i class="mark north"></i>North</span>
+        <span><i class="mark south1"></i>South1</span>
+        <span><i class="mark south2"></i>South2</span>
+        <span><i class="mark warn"></i>関門1分前に出発するよう補正</span>
+        <span><i class="mark danger"></i>関門前に到着するよう補正</span>
+        <span><i class="mark headlight"></i>ライト推奨時間帯 18:45-04:35</span>
+      </div>
+
+      <footer class="site-footer">
+        <p>距離・関門は第11回トレニックワールド100mile &amp; 100km in 彩の国の2026大会概要をもとにしています。参照: <a href="https://trainic-world.org/sainokuni/%E5%A4%A7%E4%BC%9A%E6%A6%82%E8%A6%812026">大会概要2026</a></p>
+      </footer>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
