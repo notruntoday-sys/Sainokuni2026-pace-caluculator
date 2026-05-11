@@ -143,8 +143,8 @@ function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
     const aidRow = [
       `${sections[i].name}<br><span class="sub-tag">${sections[i].loop}</span>${cutoffText}${refText}`,
       i === 0
-        ? `標高 ${elevation.ele}m`
-        : `${sections[i].dist.toFixed(1)}k / ${cumDist.toFixed(1)}k<br><span class="elevation-cell">標高 ${elevation.ele}m / 累積 +${elevation.cumGain} -${elevation.cumLoss}</span>`,
+        ? `<span class="elevation-cell">標高 ${elevation.ele}m</span>`
+        : `<span class="elevation-cell">${sections[i].dist.toFixed(1)}k / ${cumDist.toFixed(1)}k</span><span class="elevation-cell">標高 ${elevation.ele}m / 累積 +${elevation.cumGain} -${elevation.cumLoss}</span>`,
       sections[i].stayTime === 0 ? "-" : sections[i].stayTime,
     ];
 
@@ -172,7 +172,7 @@ function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
     if (i < sections.length - 1) {
       const next = sections[i + 1];
       const nextElevation = elevationSectionStats[i + 1];
-      const paceRow = ["区間", `${next.dist.toFixed(1)}k<br><span class="elevation-cell">+${nextElevation.gain} / -${nextElevation.loss}</span>`, ""];
+      const paceRow = ["区間", `<span class="elevation-cell">${next.dist.toFixed(1)}k</span><span class="elevation-cell">+${nextElevation.gain} / -${nextElevation.loss}</span>`, ""];
       for (let h = minHour; h <= maxHour; h += 1) {
         const interval = schedules[h].intervalArr[i + 1];
         const paceMinKm = interval / next.dist;
