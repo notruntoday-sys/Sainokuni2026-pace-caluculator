@@ -71,6 +71,19 @@
         </div>
       </section>
 
+      <section class="elevation-panel" aria-label="累積標高図">
+        <div class="elevation-head">
+          <div>
+            <h2>累積標高図</h2>
+            <p>GPXを1kmごとに集計。細かな標高ノイズを抑えるため8mフィルタで累積上昇を算出しています。</p>
+          </div>
+          <div class="elevation-total" id="elevation-total">--</div>
+        </div>
+        <div class="elevation-chart-wrap">
+          <svg id="elevation-chart" role="img" aria-label="1kmごとの累積上昇図"></svg>
+        </div>
+      </section>
+
       <section class="wallpaper-panel" id="wallpaper-panel" hidden>
         <div class="wallpaper-head">
           <div class="wallpaper-title" id="wallpaper-title">待ち受け画像</div>

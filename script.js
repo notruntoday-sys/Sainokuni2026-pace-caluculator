@@ -36,6 +36,10 @@ const baseSections = [
   { name: "Goal:ニューサンピア", loop: "Finish", group: "finish", dist: 5.0, coef: 0.98, soloCutoff: 2100, relayCutoff: 2040, refCutoff: null },
 ];
 
+const elevationSectionStats = [{"ele":108,"gain":0,"loss":0,"cumGain":0,"cumLoss":0},{"ele":442,"gain":1024,"loss":686,"cumGain":1024,"cumLoss":686},{"ele":345,"gain":317,"loss":419,"cumGain":1341,"cumLoss":1105},{"ele":868,"gain":1234,"loss":704,"cumGain":2575,"cumLoss":1809},{"ele":827,"gain":432,"loss":474,"cumGain":3007,"cumLoss":2283},{"ele":107,"gain":310,"loss":1038,"cumGain":3317,"cumLoss":3321},{"ele":236,"gain":438,"loss":299,"cumGain":3755,"cumLoss":3620},{"ele":756,"gain":779,"loss":263,"cumGain":4534,"cumLoss":3883},{"ele":577,"gain":622,"loss":799,"cumGain":5156,"cumLoss":4682},{"ele":144,"gain":671,"loss":1110,"cumGain":5827,"cumLoss":5792},{"ele":278,"gain":690,"loss":553,"cumGain":6517,"cumLoss":6345},{"ele":108,"gain":161,"loss":335,"cumGain":6678,"cumLoss":6680},{"ele":246,"gain":444,"loss":307,"cumGain":7122,"cumLoss":6987},{"ele":772,"gain":779,"loss":251,"cumGain":7901,"cumLoss":7238},{"ele":568,"gain":604,"loss":811,"cumGain":8505,"cumLoss":8049},{"ele":130,"gain":699,"loss":1134,"cumGain":9204,"cumLoss":9183},{"ele":291,"gain":704,"loss":541,"cumGain":9908,"cumLoss":9724},{"ele":106,"gain":152,"loss":335,"cumGain":10060,"cumLoss":10059}];
+
+const elevationProfile = [[0,108,0],[1,96,37],[2,95,45],[3,104,63],[4,292,244],[5,342,331],[6,191,331],[7,299,435],[8,313,489],[9,449,625],[10,351,673],[11,387,750],[12,592,953],[13,647,1024],[14,486,1024],[15,457,1073],[16,397,1139],[17,275,1139],[18,149,1139],[19,146,1139],[20,297,1292],[21,416,1412],[22,492,1512],[23,409,1606],[24,319,1626],[25,183,1661],[26,347,1823],[27,404,1914],[28,543,2054],[29,662,2175],[30,846,2371],[31,712,2389],[32,867,2566],[33,862,2611],[34,828,2700],[35,800,2738],[36,806,2778],[37,855,2883],[38,863,2942],[39,867,3007],[40,814,3062],[41,816,3086],[42,768,3117],[43,755,3184],[44,656,3184],[45,571,3184],[46,476,3184],[47,431,3211],[48,329,3230],[49,273,3238],[50,309,3309],[51,240,3317],[52,117,3317],[53,109,3317],[54,113,3325],[55,136,3359],[56,83,3390],[57,77,3390],[58,209,3518],[59,237,3585],[60,186,3618],[61,306,3738],[62,236,3755],[63,259,3803],[64,171,3803],[65,242,3903],[66,168,3920],[67,256,4004],[68,452,4209],[69,584,4335],[70,718,4481],[71,660,4534],[72,557,4544],[73,448,4544],[74,416,4607],[75,232,4607],[76,393,4771],[77,417,4832],[78,590,5001],[79,583,5066],[80,572,5121],[81,577,5156],[82,445,5174],[83,514,5249],[84,285,5265],[85,400,5378],[86,342,5439],[87,433,5564],[88,445,5664],[89,423,5736],[90,443,5811],[91,257,5827],[92,144,5827],[93,191,5871],[94,323,6017],[95,280,6025],[96,380,6145],[97,415,6189],[98,438,6304],[99,486,6370],[100,442,6412],[101,407,6452],[102,321,6468],[103,303,6517],[104,343,6604],[105,368,6670],[106,158,6670],[107,113,6670],[108,106,6678],[109,146,6721],[110,147,6735],[111,80,6759],[112,114,6788],[113,259,6952],[114,164,6952],[115,246,7044],[116,304,7122],[117,271,7162],[118,236,7170],[119,172,7198],[120,241,7287],[121,211,7326],[122,374,7496],[123,504,7623],[124,580,7711],[125,766,7901],[126,581,7901],[127,523,7911],[128,409,7920],[129,252,7974],[130,294,8031],[131,408,8177],[132,482,8262],[133,616,8412],[134,567,8420],[135,568,8486],[136,487,8521],[137,550,8620],[138,516,8662],[139,467,8681],[140,409,8719],[141,270,8751],[142,280,8834],[143,253,8915],[144,193,8948],[145,406,9204],[146,167,9204],[147,143,9218],[148,260,9329],[149,318,9416],[150,358,9488],[151,380,9544],[152,435,9635],[153,458,9713],[154,476,9774],[155,440,9821],[156,371,9851],[157,323,9868],[158,275,9908],[159,368,10034],[160,302,10060],[161,120,10060],[162,108,10060],[162.8,106,10060]];
+
 function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
   const category = categories[categoryKey] || categories.solo;
   const startMinutesAbsolute = category.startMinutes;
@@ -123,7 +127,7 @@ function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
     schedules[h] = { arrAbs, depAbs, intervalArr, isArrivalCapped, isDepartureCapped };
   }
 
-  const headers = ["エイド", "区間 / 累積", "滞在"];
+  const headers = ["エイド", "区間 / 累積 / 標高", "滞在"];
   for (let h = minHour; h <= maxHour; h += 1) headers.push(`${h}h ペース`);
   const relayLegs = buildRelayLegs(schedules, sections, minHour, maxHour, startMinutesAbsolute);
 
@@ -131,13 +135,16 @@ function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
   let cumDist = 0;
   for (let i = 0; i < sections.length; i += 1) {
     cumDist += sections[i].dist;
+    const elevation = elevationSectionStats[i];
     const cutoffText = sections[i].cutoff === null
       ? ""
       : `<br><span class="cutoff-tag">${category.label}関門 ${formatElapsed(sections[i].cutoff)} (${formatClockLabel(startMinutesAbsolute + sections[i].cutoff)})</span>`;
     const refText = sections[i].refCutoff === null ? "" : `<br><span class="sub-tag">100km参考 ${formatClockLabel(7 * 60 + sections[i].refCutoff)}</span>`;
     const aidRow = [
       `${sections[i].name}<br><span class="sub-tag">${sections[i].loop}</span>${cutoffText}${refText}`,
-      i === 0 ? "-" : `${sections[i].dist.toFixed(1)}k / ${cumDist.toFixed(1)}k`,
+      i === 0
+        ? `標高 ${elevation.ele}m`
+        : `${sections[i].dist.toFixed(1)}k / ${cumDist.toFixed(1)}k<br><span class="elevation-cell">標高 ${elevation.ele}m / 累積 +${elevation.cumGain} -${elevation.cumLoss}</span>`,
       sections[i].stayTime === 0 ? "-" : sections[i].stayTime,
     ];
 
@@ -164,7 +171,8 @@ function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
 
     if (i < sections.length - 1) {
       const next = sections[i + 1];
-      const paceRow = ["区間", `${next.dist.toFixed(1)}k`, ""];
+      const nextElevation = elevationSectionStats[i + 1];
+      const paceRow = ["区間", `${next.dist.toFixed(1)}k<br><span class="elevation-cell">+${nextElevation.gain} / -${nextElevation.loss}</span>`, ""];
       for (let h = minHour; h <= maxHour; h += 1) {
         const interval = schedules[h].intervalArr[i + 1];
         const paceMinKm = interval / next.dist;
@@ -187,6 +195,8 @@ function buildRelayLegs(schedules, sections, minHour, maxHour, startMinutesAbsol
 
   return legs.map((leg) => {
     const distance = sections.slice(leg.from + 1, leg.to + 1).reduce((sum, section) => sum + section.dist, 0);
+    const gain = elevationSectionStats.slice(leg.from + 1, leg.to + 1).reduce((sum, section) => sum + section.gain, 0);
+    const loss = elevationSectionStats.slice(leg.from + 1, leg.to + 1).reduce((sum, section) => sum + section.loss, 0);
     const cells = [];
     for (let h = minHour; h <= maxHour; h += 1) {
       const schedule = schedules[h];
@@ -202,7 +212,7 @@ function buildRelayLegs(schedules, sections, minHour, maxHour, startMinutesAbsol
         needsHeadlight: doesIntervalNeedHeadlight(startAbs, endAbs),
       });
     }
-    return { ...leg, distance, cells, startName: sections[leg.from].name, endName: sections[leg.to].name };
+    return { ...leg, distance, gain, loss, cells, startName: sections[leg.from].name, endName: sections[leg.to].name };
   });
 }
 
@@ -360,7 +370,7 @@ function renderMemberSummary(result) {
     tr.appendChild(nameCell);
 
     const distanceCell = document.createElement("td");
-    distanceCell.textContent = `${leg.distance.toFixed(1)}k`;
+    distanceCell.innerHTML = `${leg.distance.toFixed(1)}k<span>+${leg.gain} / -${leg.loss}</span>`;
     tr.appendChild(distanceCell);
 
     leg.cells.forEach((cell) => {
@@ -374,6 +384,49 @@ function renderMemberSummary(result) {
   table.appendChild(tbody);
 }
 
+function renderElevationChart() {
+  const svg = document.querySelector("#elevation-chart");
+  const total = document.querySelector("#elevation-total");
+  if (!svg || !total) return;
+
+  const width = 1000;
+  const height = 260;
+  const pad = { left: 54, right: 24, top: 18, bottom: 34 };
+  const plotW = width - pad.left - pad.right;
+  const plotH = height - pad.top - pad.bottom;
+  const maxKm = 162.8;
+  const maxGain = Math.ceil(elevationProfile.at(-1)[2] / 1000) * 1000;
+  const maxEle = Math.ceil(Math.max(...elevationProfile.map((point) => point[1])) / 100) * 100;
+  const x = (km) => pad.left + (km / maxKm) * plotW;
+  const yGain = (gain) => pad.top + plotH - (gain / maxGain) * plotH;
+  const yEle = (ele) => pad.top + plotH - (ele / maxEle) * plotH * 0.72;
+  const gainPoints = elevationProfile.map(([km, , gain]) => `${x(km).toFixed(1)},${yGain(gain).toFixed(1)}`).join(" ");
+  const elePoints = elevationProfile.map(([km, ele]) => `${x(km).toFixed(1)},${yEle(ele).toFixed(1)}`).join(" ");
+  const eleArea = `${pad.left},${pad.top + plotH} ${elePoints} ${x(maxKm)},${pad.top + plotH}`;
+  const ticks = [0, 2500, 5000, 7500, 10000];
+  const aidKms = [];
+  let cumKm = 0;
+  baseSections.forEach((section, index) => {
+    cumKm += section.dist;
+    if (index > 0 && (section.base || index === baseSections.length - 1)) aidKms.push({ km: cumKm, label: section.loop });
+  });
+
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.innerHTML = `
+    <rect width="${width}" height="${height}" rx="8" fill="#ffffff"></rect>
+    ${ticks.map((tick) => `<line x1="${pad.left}" y1="${yGain(tick)}" x2="${width - pad.right}" y2="${yGain(tick)}" stroke="#e3e8e3"></line><text x="${pad.left - 10}" y="${yGain(tick) + 4}" text-anchor="end" class="chart-label">${tick.toLocaleString()}</text>`).join("")}
+    ${aidKms.map((aid) => `<line x1="${x(aid.km)}" y1="${pad.top}" x2="${x(aid.km)}" y2="${pad.top + plotH}" stroke="#cfd8cf" stroke-dasharray="4 5"></line><text x="${x(aid.km)}" y="${height - 10}" text-anchor="middle" class="chart-label">${aid.label.replace("終わり", "")}</text>`).join("")}
+    <polygon points="${eleArea}" fill="#dbeafe" opacity="0.55"></polygon>
+    <polyline points="${elePoints}" fill="none" stroke="#7aa0c8" stroke-width="2" opacity="0.75"></polyline>
+    <polyline points="${gainPoints}" fill="none" stroke="#23533d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+    <line x1="${pad.left}" y1="${pad.top + plotH}" x2="${width - pad.right}" y2="${pad.top + plotH}" stroke="#bfc8bf"></line>
+    <text x="${width - pad.right}" y="${pad.top + 14}" text-anchor="end" class="chart-note">緑: 累積上昇 / 青: 標高</text>
+    <text x="${pad.left}" y="${height - 10}" class="chart-label">0km</text>
+    <text x="${width - pad.right}" y="${height - 10}" text-anchor="end" class="chart-label">162.8km</text>
+  `;
+  total.textContent = `GPX累積 +${elevationProfile.at(-1)[2].toLocaleString()}m`;
+}
+
 function cleanLegName(name) {
   return name.replace(/^Start:/, "").replace(/^Goal:/, "");
 }
@@ -382,6 +435,7 @@ function update() {
   syncCategoryControls();
   const result = calculateCurrent();
   renderMemberSummary(result);
+  renderElevationChart();
   renderTable(result);
   document.querySelector("#notice").textContent =
     `${result.meta.categoryLabel} / 表示範囲 ${result.meta.minHour}h-${result.meta.maxHour}h / 休憩合計 ${result.meta.totalStayTime}分 / スタート ${formatTimeOnly(result.meta.startMinutesAbsolute)} / ライト ${SUNSET_LABEL}-${SUNRISE_LABEL} / コース ${COURSE_TOTALS.dist.toFixed(1)}km +${COURSE_TOTALS.gain.toLocaleString()}m`;
