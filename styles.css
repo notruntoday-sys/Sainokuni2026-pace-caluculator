@@ -553,10 +553,90 @@ th:nth-child(3) {
   font-size: 0.82rem;
 }
 
+.podcast-note {
+  display: grid;
+  gap: 6px;
+  max-width: 760px;
+}
+
+.podcast-note p,
+.data-note {
+  margin: 0;
+}
+
+.podcast-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 700;
+}
+
+.podcast-name {
+  color: #2563eb;
+  font-weight: 900;
+}
+
+.podcast-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+}
+
+.podcast-links a {
+  font-weight: 900;
+  text-underline-offset: 3px;
+}
+
+.spotify-link {
+  color: #16a34a;
+}
+
+.apple-link {
+  color: #2563eb;
+}
+
+.data-note {
+  margin-top: 12px;
+}
+
+.ofuse-area {
+  display: flex;
+  justify-content: center;
+  margin: 22px 0 0;
+}
+
+.ofuse-widget-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #fff;
+  padding: 7px 14px;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
 .site-footer a {
   color: var(--accent-2);
   font-weight: 900;
   text-underline-offset: 3px;
+}
+
+.site-footer .spotify-link {
+  color: #16a34a;
+}
+
+.site-footer .apple-link {
+  color: #2563eb;
+}
+
+.site-footer .ofuse-widget-button {
+  color: #fff;
 }
 
 @media (max-width: 980px) {
@@ -760,5 +840,28 @@ th:nth-child(3) {
     margin-top: 12px;
     padding-top: 10px;
     font-size: 0.68rem;
+  }
+
+  .podcast-note {
+    gap: 4px;
+  }
+
+  .podcast-line {
+    gap: 5px;
+  }
+
+  .podcast-links {
+    font-size: 0.68rem;
+    gap: 6px;
+  }
+
+  .ofuse-area {
+    margin-top: 14px;
+  }
+
+  .ofuse-widget-button {
+    min-height: 30px;
+    padding: 5px 12px;
+    font-size: 0.72rem;
   }
 }
