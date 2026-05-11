@@ -60,9 +60,7 @@ function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
   baseWeights.forEach((weight, index) => {
     const mid = cumWeight + weight / 2;
     let multiplier = 1.0;
-    if (strategy === "彩の国向け") {
-      multiplier = index >= 11 ? 1.12 : index >= 6 ? 1.06 : 0.98;
-    } else if (mid > totalBaseWeight / 2) {
+    if (mid > totalBaseWeight / 2) {
       if (strategy === "後半10%落ち") multiplier = 1.1;
       if (strategy === "後半20%落ち") multiplier = 1.2;
       if (strategy === "後半30%落ち") multiplier = 1.3;
@@ -368,7 +366,7 @@ function renderMemberSummary(result) {
     leg.cells.forEach((cell) => {
       const td = document.createElement("td");
       if (cell.needsHeadlight) td.classList.add("headlight-cell");
-      td.innerHTML = `<strong>${formatDuration(cell.duration)}</strong><span>経過 ${formatDuration(cell.startElapsed)}→${formatDuration(cell.endElapsed)}</span><span>${cell.startClock}→${cell.endClock}</span>`;
+      td.innerHTML = `<strong>${formatDuration(cell.duration)}</strong><span><b class="time-label">経</b>${formatDuration(cell.startElapsed)}→${formatDuration(cell.endElapsed)}</span><span><b class="time-label">時</b>${cell.startClock}→${cell.endClock}</span>`;
       tr.appendChild(td);
     });
     tbody.appendChild(tr);
