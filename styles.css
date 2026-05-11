@@ -286,7 +286,7 @@ button:hover {
 .chart-label,
 .chart-note {
   fill: #647268;
-  font-size: 19px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -834,6 +834,11 @@ th:nth-child(3) {
 
   #elevation-chart {
     min-width: 620px;
+  }
+
+  .chart-label,
+  .chart-note {
+    font-size: 11px;
   }
 
   .legend {
