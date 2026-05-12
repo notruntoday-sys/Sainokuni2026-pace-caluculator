@@ -9,6 +9,17 @@ const SUNRISE_LABEL = "04:35";
 const SUNSET_LABEL = "18:45";
 const HEADLIGHT_CELL_MARKER = "__HEADLIGHT_CELL__";
 const STORAGE_KEY = "sainokuni-100mile-pace-settings-v2";
+const LOOP_SPLIT_STRATEGY = "9・11・13時間";
+const LOOP_SPLIT_TARGET_HOURS = {
+  north: 9,
+  south1: 11,
+  south2: 13,
+};
+const LOOP_END_INDEXES = {
+  north: 5,
+  south1: 11,
+  south2: 17,
+};
 
 const categories = {
   solo: { label: "ソロ", startMinutes: 7 * 60, maxHour: 35 },
@@ -52,27 +63,8 @@ function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
     maxHour = temp;
   }
 
-  const sections = buildSections(restPattern, categoryKey);
-  const weights = [];
-  const baseWeights = [];
-  for (let i = 1; i < sections.length; i += 1) {
-    baseWeights.push(sections[i].dist * sections[i].coef);
-  }
-
-  const totalBaseWeight = baseWeights.reduce((sum, value) => sum + value, 0);
-  let cumWeight = 0;
-  baseWeights.forEach((weight, index) => {
-    const mid = cumWeight + weight / 2;
-    let multiplier = 1.0;
-    if (mid > totalBaseWeight / 2) {
-      if (strategy === "後半10%落ち") multiplier = 1.1;
-      if (strategy === "後半20%落ち") multiplier = 1.2;
-      if (strategy === "後半30%落ち") multiplier = 1.3;
-      if (strategy === "後半40%落ち") multiplier = 1.4;
-    }
-    weights.push(weight * multiplier);
-    cumWeight += weight;
-  });
+  const sections = buildSections(restPattern, categoryKey, strategy);
+  const weights = buildWeights(sections, strategy);
 
   const totalWeight = weights.reduce((sum, value) => sum + value, 0);
   const totalStayTime = sections.reduce((sum, section) => sum + section.stayTime, 0);
@@ -186,6 +178,61 @@ function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
   return { headers, rows, relayLegs, meta: { categoryKey, categoryLabel: category.label, minHour, maxHour, totalStayTime, startMinutesAbsolute, restPattern, strategy } };
 }
 
+function buildWeights(sections, strategy) {
+  const baseWeights = [];
+  for (let i = 1; i < sections.length; i += 1) {
+    baseWeights.push(sections[i].dist * sections[i].coef);
+  }
+
+  if (strategy === LOOP_SPLIT_STRATEGY) {
+    return buildLoopSplitWeights(sections, baseWeights);
+  }
+
+  const totalBaseWeight = baseWeights.reduce((sum, value) => sum + value, 0);
+  const weights = [];
+  let cumWeight = 0;
+  baseWeights.forEach((weight) => {
+    const mid = cumWeight + weight / 2;
+    let multiplier = 1.0;
+    if (mid > totalBaseWeight / 2) {
+      if (strategy === "後半10%落ち") multiplier = 1.1;
+      if (strategy === "後半20%落ち") multiplier = 1.2;
+      if (strategy === "後半30%落ち") multiplier = 1.3;
+      if (strategy === "後半40%落ち") multiplier = 1.4;
+    }
+    weights.push(weight * multiplier);
+    cumWeight += weight;
+  });
+  return weights;
+}
+
+function buildLoopSplitWeights(sections, baseWeights) {
+  const groups = {
+    north: { raw: 0, stay: 0 },
+    south1: { raw: 0, stay: 0 },
+    south2: { raw: 0, stay: 0 },
+  };
+
+  for (let i = 1; i < sections.length; i += 1) {
+    const loop = getLoopKey(sections[i]);
+    groups[loop].raw += baseWeights[i - 1];
+    if (i !== LOOP_END_INDEXES[loop]) groups[loop].stay += sections[i].stayTime;
+  }
+
+  return baseWeights.map((weight, index) => {
+    const sectionIndex = index + 1;
+    const loop = getLoopKey(sections[sectionIndex]);
+    const targetRunTime = LOOP_SPLIT_TARGET_HOURS[loop] * 60 - groups[loop].stay;
+    return (targetRunTime * weight) / groups[loop].raw;
+  });
+}
+
+function getLoopKey(section) {
+  if (section.group === "north") return "north";
+  if (section.group === "south1") return "south1";
+  return "south2";
+}
+
 function buildRelayLegs(schedules, sections, minHour, maxHour, startMinutesAbsolute) {
   const legs = [
     { label: "North", group: "north", from: 0, to: 5 },
@@ -216,7 +263,7 @@ function buildRelayLegs(schedules, sections, minHour, maxHour, startMinutesAbsol
   });
 }
 
-function buildSections(restPattern, categoryKey) {
+function buildSections(restPattern, categoryKey, strategy) {
   const stays = {
     短め: { aid: 3, base1: 15, base2: 20 },
     標準: { aid: 5, base1: 20, base2: 25 },
@@ -233,6 +280,7 @@ function buildSections(restPattern, categoryKey) {
     if (index === 0 || index === baseSections.length - 1) stayTime = 0;
     if (section.base) stayTime = section.loop.includes("South1") ? stays.base2 : stays.base1;
     if (categoryKey === "relay" && section.base) stayTime = relayBaseStays[restPattern] ?? 2;
+    if (strategy === LOOP_SPLIT_STRATEGY && section.base) stayTime = 30;
     return {
       ...section,
       cutoff: categoryKey === "relay" ? section.relayCutoff : section.soloCutoff,
