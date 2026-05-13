@@ -9,6 +9,7 @@ const SUNRISE_LABEL = "04:35";
 const SUNSET_LABEL = "18:45";
 const HEADLIGHT_CELL_MARKER = "__HEADLIGHT_CELL__";
 const STORAGE_KEY = "sainokuni-100mile-pace-settings-v2";
+const DEFAULT_MIN_HOUR = 24;
 const LOOP_SPLIT_STRATEGY = "9・11・13時間";
 const LOOP_SPLIT_TARGET_HOURS = {
   north: 9,
@@ -54,7 +55,7 @@ const elevationProfile = [[0,108,0],[1,96,37],[2,95,45],[3,104,63],[4,292,244],[
 function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
   const category = categories[categoryKey] || categories.solo;
   const startMinutesAbsolute = category.startMinutes;
-  let minHour = clamp(parseInt(minH, 10) || 28, 1, 60);
+  let minHour = clamp(parseInt(minH, 10) || DEFAULT_MIN_HOUR, 1, 60);
   let maxHour = clamp(parseInt(maxH, 10) || category.maxHour, 1, category.maxHour);
   minHour = Math.min(minHour, category.maxHour);
   if (minHour > maxHour) {
@@ -544,8 +545,8 @@ function setControlValue(selector, value) {
 function populateHourSelects() {
   const minSelect = document.querySelector("#min-hour");
   const maxSelect = document.querySelector("#max-hour");
-  for (let hour = 20; hour <= 35; hour += 1) {
-    minSelect.appendChild(new Option(`${hour}時間`, String(hour), hour === 28, hour === 28));
+  for (let hour = DEFAULT_MIN_HOUR; hour <= 35; hour += 1) {
+    minSelect.appendChild(new Option(`${hour}時間`, String(hour), hour === DEFAULT_MIN_HOUR, hour === DEFAULT_MIN_HOUR));
     maxSelect.appendChild(new Option(`${hour}時間`, String(hour), hour === 35, hour === 35));
   }
 }
@@ -564,7 +565,7 @@ function syncCategoryControls() {
 }
 
 function showWallpaper() {
-  const minHour = clamp(parseInt(document.querySelector("#min-hour").value, 10) || 28, 1, 58);
+  const minHour = clamp(parseInt(document.querySelector("#min-hour").value, 10) || DEFAULT_MIN_HOUR, 1, 58);
   const categoryKey = document.querySelector("#race-category").value;
   const category = categories[categoryKey] || categories.solo;
   const wallpaperMax = Math.min(minHour + 2, category.maxHour);
