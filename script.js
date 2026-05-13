@@ -119,7 +119,7 @@ function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
     schedules[h] = { arrAbs, depAbs, intervalArr, isArrivalCapped, isDepartureCapped };
   }
 
-  const headers = ["エイド", "区間 / 累積 / 標高", "滞在"];
+  const headers = ["エイド", "区間 / 累積 / 上昇下降", "滞在"];
   for (let h = minHour; h <= maxHour; h += 1) headers.push(`${h}h ペース`);
   const relayLegs = buildRelayLegs(schedules, sections, minHour, maxHour, startMinutesAbsolute);
 
@@ -135,8 +135,8 @@ function calculatePaceData(categoryKey, restPattern, strategy, minH, maxH) {
     const aidRow = [
       `${sections[i].name}<br><span class="sub-tag">${sections[i].loop}</span>${cutoffText}${refText}`,
       i === 0
-        ? `<span class="elevation-cell">標高 ${elevation.ele}m</span>`
-        : `<span class="elevation-cell">${sections[i].dist.toFixed(1)}k / ${cumDist.toFixed(1)}k</span><span class="elevation-cell">標高 ${elevation.ele}m / 累積 +${elevation.cumGain} -${elevation.cumLoss}</span>`,
+        ? `<span class="elevation-cell">+0 / -0</span>`
+        : `<span class="elevation-cell">${sections[i].dist.toFixed(1)}k / ${cumDist.toFixed(1)}k</span><span class="elevation-cell">+${elevation.cumGain} / -${elevation.cumLoss}</span>`,
       sections[i].stayTime === 0 ? "-" : sections[i].stayTime,
     ];
 
